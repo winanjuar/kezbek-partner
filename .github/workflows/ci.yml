@@ -26,7 +26,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-        run: npm ci
       - uses: oke-py/npm-audit-action@v2
         with:
           audit_level: moderate
@@ -34,5 +33,6 @@ jobs:
           issue_assignees: oke-py
           issue_labels: vulnerability,test
           dedupe_issues: true
- 
-
+      - run: npm ci
+      - run: npm run build --if-present
+      - run: npm run test
