@@ -35,4 +35,7 @@ jobs:
           dedupe_issues: true
       - run: npm ci
       - run: npm run build --if-present
-      - run: npm run test
+      - run: npm run test:cov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+      
