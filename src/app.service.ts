@@ -19,11 +19,11 @@ export class AppService {
     return partner;
   }
 
-  async findPartnerByApiKey(api_key: string): Promise<Partner> {
-    const partner = await this.partnerRepository.findOneByApiKey(api_key);
+  async findPartnerByApiKey(apikey: string): Promise<Partner> {
+    const partner = await this.partnerRepository.findOneByApiKey(apikey);
     if (!partner) {
       throw new NotFoundException(
-        `Partner with API Key ${api_key} doesn't exist`,
+        `Partner with API Key ${apikey} doesn't exist`,
       );
     }
     return partner;

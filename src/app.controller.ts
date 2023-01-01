@@ -18,7 +18,7 @@ import { NotFoundResponseDto } from './dto/response/not-found.response.dto';
 import { SinglePartnerResponseDto } from './dto/response/single-partner.response.dto';
 
 @ApiTags('Partner')
-@Controller()
+@Controller({ version: '1' })
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -27,7 +27,7 @@ export class AppController {
   @ApiBadRequestResponse({ type: BadRequestResponseDto })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorDto })
   @Post()
-  async createTransaction(@Body() partnerDto: CreatePartnerDto) {
+  async createPartner(@Body() partnerDto: CreatePartnerDto) {
     const newPartner = await this.appService.createPartner(partnerDto);
     return new CreatePartnerResponseDto(
       HttpStatus.CREATED,
@@ -43,7 +43,7 @@ export class AppController {
   @Get(':id')
   async getPartnerById(@Param() partnerDto: IdPartnerDto) {
     const partner = await this.appService.findPartnerById(partnerDto.id);
-    return new CreatePartnerResponseDto(
+    return new SinglePartnerResponseDto(
       HttpStatus.OK,
       `Get data partner with ID ${partnerDto.id} successfully`,
       partner,
@@ -53,12 +53,12 @@ export class AppController {
   @ApiOkResponse({ type: SinglePartnerResponseDto })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorDto })
-  @Get('/key/:api')
-  async getPartnerByAPI(@Param('api') api: string) {
-    const partner = await this.appService.findPartnerByApiKey(api);
-    return new CreatePartnerResponseDto(
+  @Get('/get-by-apikey/:apikey')
+  async getPartnerByAPI(@Param('apikey') apikey: string) {
+    const partner = await this.appService.findPartnerByApiKey(apikey);
+    return new SinglePartnerResponseDto(
       HttpStatus.OK,
-      `Get data partner with API Key ${api} successfully`,
+      `Get data partner with API Key ${apikey} successfully`,
       partner,
     );
   }
