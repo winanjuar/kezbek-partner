@@ -10,19 +10,12 @@ on:
     branches: [ "main" ]
 
 jobs:
-  main:
+  scan:
+    name: npm audit
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
+      - name: install dependencies
         run: npm ci
       - uses: oke-py/npm-audit-action@v2
         with:
@@ -31,4 +24,3 @@ jobs:
           issue_assignees: oke-py
           issue_labels: vulnerability,test
           dedupe_issues: true
-      - run: npm test
