@@ -49,7 +49,8 @@ describe('PartnerRepository', () => {
 
       // assert
       expect(newPartner).toEqual(mockPartner);
-      expect(spySave).toBeCalled();
+      expect(spySave).toHaveBeenCalledTimes(1);
+      expect(spySave).toHaveBeenCalledWith(partnerDto);
     });
   });
 
@@ -58,7 +59,7 @@ describe('PartnerRepository', () => {
       // arrange
       const id = mockPartner.id;
 
-      const spyFindOne = jest
+      const spyFineOne = jest
         .spyOn(partnerRepository, 'findOne')
         .mockResolvedValue(mockPartner);
 
@@ -67,7 +68,8 @@ describe('PartnerRepository', () => {
 
       // assert
       expect(foundPartner).toEqual(mockPartner);
-      expect(spyFindOne).toHaveBeenCalledWith({ where: { id } });
+      expect(spyFineOne).toHaveBeenCalledTimes(1);
+      expect(spyFineOne).toHaveBeenCalledWith({ where: { id } });
     });
   });
 
@@ -84,6 +86,7 @@ describe('PartnerRepository', () => {
 
       // assert
       expect(foundPartner).toEqual(mockPartner);
+      expect(spyFindOne).toHaveBeenCalledTimes(1);
       expect(spyFindOne).toHaveBeenCalledWith({ where: { api_key } });
     });
   });
