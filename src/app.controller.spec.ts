@@ -48,14 +48,14 @@ describe('AppController', () => {
   afterEach(() => jest.clearAllMocks());
 
   describe('createPartner', () => {
-    const partnerDto: CreatePartnerRequestDto = pick(mockPartner, [
-      'name',
-      'pic_email',
-      'pic_phone',
-    ]);
-
     it('should response single response partner', async () => {
       // arrange
+      const partnerDto: CreatePartnerRequestDto = pick(mockPartner, [
+        'name',
+        'pic_email',
+        'pic_phone',
+      ]);
+
       const spyCreatePartner = jest
         .spyOn(mockAppService, 'createPartner')
         .mockResolvedValue(mockPartner);
@@ -76,6 +76,12 @@ describe('AppController', () => {
 
     it('should throw internal server error when unknown error occured', async () => {
       // arrange
+      const partnerDto: CreatePartnerRequestDto = pick(mockPartner, [
+        'name',
+        'pic_email',
+        'pic_phone',
+      ]);
+
       const spyCreatePartner = jest
         .spyOn(mockAppService, 'createPartner')
         .mockRejectedValue(new InternalServerErrorException('error'));
