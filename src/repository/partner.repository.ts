@@ -14,7 +14,7 @@ export class PartnerRepository extends Repository<Partner> {
     return await this.save(partner);
   }
 
-  async findOneById(id: string): Promise<Partner> {
+  async findOneByIdPartner(id: string): Promise<Partner> {
     return await this.findOne({ where: { id } });
   }
 

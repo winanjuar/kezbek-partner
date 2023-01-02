@@ -1,4 +1,12 @@
-import { Body, Controller, Get, HttpStatus, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpStatus,
+  InternalServerErrorException,
+  Param,
+  Post,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -28,12 +36,16 @@ export class AppController {
   @ApiInternalServerErrorResponse({ type: InternalServerErrorDto })
   @Post()
   async createPartner(@Body() partnerDto: CreatePartnerDto) {
-    const newPartner = await this.appService.createPartner(partnerDto);
-    return new CreatePartnerResponseDto(
-      HttpStatus.CREATED,
-      'Create new partner successfully',
-      newPartner,
-    );
+    try {
+      const newPartner = await this.appService.createPartner(partnerDto);
+      return new CreatePartnerResponseDto(
+        HttpStatus.CREATED,
+        'Create new partner successfully',
+        newPartner,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   @ApiOkResponse({ type: SinglePartnerResponseDto })
@@ -42,12 +54,16 @@ export class AppController {
   @ApiInternalServerErrorResponse({ type: InternalServerErrorDto })
   @Get(':id')
   async getPartnerById(@Param() partnerDto: IdPartnerDto) {
-    const partner = await this.appService.findPartnerById(partnerDto.id);
-    return new SinglePartnerResponseDto(
-      HttpStatus.OK,
-      `Get data partner with ID ${partnerDto.id} successfully`,
-      partner,
-    );
+    try {
+      const partner = await this.appService.findPartnerById(partnerDto.id);
+      return new SinglePartnerResponseDto(
+        HttpStatus.OK,
+        `Get data partner with ID ${partnerDto.id} successfully`,
+        partner,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   @ApiOkResponse({ type: SinglePartnerResponseDto })
@@ -55,11 +71,15 @@ export class AppController {
   @ApiInternalServerErrorResponse({ type: InternalServerErrorDto })
   @Get('/get-by-apikey/:apikey')
   async getPartnerByAPI(@Param('apikey') apikey: string) {
-    const partner = await this.appService.findPartnerByApiKey(apikey);
-    return new SinglePartnerResponseDto(
-      HttpStatus.OK,
-      `Get data partner with API Key ${apikey} successfully`,
-      partner,
-    );
+    try {
+      const partner = await this.appService.findPartnerByApiKey(apikey);
+      return new SinglePartnerResponseDto(
+        HttpStatus.OK,
+        `Get data partner with API Key ${apikey} successfully`,
+        partner,
+      );
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 }

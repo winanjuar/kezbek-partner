@@ -1,4 +1,4 @@
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
@@ -45,8 +45,152 @@ describe('AppController', () => {
 
   afterEach(() => jest.clearAllMocks());
 
-  describe('ValidationPipe', () => {
-    it('should throw error when uuid not valid', async () => {
+  describe('createPartner', () => {
+    const partnerDto: CreatePartnerDto = pick(mockPartner, [
+      'name',
+      'pic_email',
+      'pic_phone',
+    ]);
+
+    it('should response single response partner', async () => {
+      // arrange
+      const spyCreatePartner = jest
+        .spyOn(mockAppService, 'createPartner')
+        .mockResolvedValue(mockPartner);
+      mockCreateResponse = new CreatePartnerResponseDto(
+        HttpStatus.CREATED,
+        `Create new partner successfully`,
+        mockPartner,
+      );
+
+      // act
+      const response = await controller.createPartner(partnerDto);
+
+      // assert
+      expect(response).toEqual(mockCreateResponse);
+      expect(spyCreatePartner).toHaveBeenCalledTimes(1);
+      expect(spyCreatePartner).toHaveBeenCalledWith(partnerDto);
+    });
+
+    it('should throw internal server error when unknown error occured', async () => {
+      // arrange
+      const spyCreatePartner = jest
+        .spyOn(mockAppService, 'createPartner')
+        .mockRejectedValue(new InternalServerErrorException('error'));
+
+      // act
+      const createPartner = controller.createPartner(partnerDto);
+
+      // assert
+      await expect(createPartner).rejects.toEqual(
+        new InternalServerErrorException('error'),
+      );
+      expect(spyCreatePartner).toHaveBeenCalledTimes(1);
+      expect(spyCreatePartner).toHaveBeenCalledWith(partnerDto);
+    });
+  });
+
+  describe('getPartnerById', () => {
+    it('should response single response partner', async () => {
+      // arrange
+      const partnerDto: IdPartnerDto = pick(mockPartner, ['id']);
+      const id = partnerDto.id;
+      const spyFindPartnerById = jest
+        .spyOn(mockAppService, 'findPartnerById')
+        .mockResolvedValue(mockPartner);
+      mockSingleResponse = new SinglePartnerResponseDto(
+        HttpStatus.OK,
+        `Get data partner with ID ${id} successfully`,
+        mockPartner,
+      );
+
+      // act
+      const response = await controller.getPartnerById(partnerDto);
+
+      // assert
+      expect(response).toEqual(mockSingleResponse);
+      expect(spyFindPartnerById).toHaveBeenCalledTimes(1);
+      expect(spyFindPartnerById).toHaveBeenCalledWith(id);
+    });
+
+    it('should throw internal server error when unknown error occured', async () => {
+      // arrange
+      const partnerDto: IdPartnerDto = pick(mockPartner, ['id']);
+      const id = partnerDto.id;
+      const spyFindPartnerById = jest
+        .spyOn(mockAppService, 'findPartnerById')
+        .mockRejectedValue(new InternalServerErrorException('error'));
+
+      // act
+      const getPartnerById = controller.getPartnerById(partnerDto);
+
+      // assert
+      await expect(getPartnerById).rejects.toEqual(
+        new InternalServerErrorException('error'),
+      );
+      expect(spyFindPartnerById).toHaveBeenCalledTimes(1);
+      expect(spyFindPartnerById).toHaveBeenCalledWith(id);
+    });
+  });
+
+  describe('getPartnerByAPI', () => {
+    it('should response single response partner', async () => {
+      // arrange
+      const apikey = mockPartner.api_key;
+      const spyFindPartnerByApiKey = jest
+        .spyOn(mockAppService, 'findPartnerByApiKey')
+        .mockResolvedValue(mockPartner);
+      mockSingleResponse = new SinglePartnerResponseDto(
+        HttpStatus.OK,
+        `Get data partner with API Key ${apikey} successfully`,
+        mockPartner,
+      );
+
+      // act
+      const response = await controller.getPartnerByAPI(apikey);
+
+      // assert
+      expect(response).toEqual(mockSingleResponse);
+      expect(spyFindPartnerByApiKey).toHaveBeenCalledTimes(1);
+      expect(spyFindPartnerByApiKey).toHaveBeenCalledWith(apikey);
+    });
+
+    it('should throw internal server error when unknown error occured', async () => {
+      // arrange
+      const apikey = mockPartner.api_key;
+      const spyFindPartnerByApiKey = jest
+        .spyOn(mockAppService, 'findPartnerByApiKey')
+        .mockRejectedValue(new InternalServerErrorException('error'));
+
+      // act
+      const getPartnerByAPI = controller.getPartnerByAPI(apikey);
+
+      // assert
+      await expect(getPartnerByAPI).rejects.toEqual(
+        new InternalServerErrorException('error'),
+      );
+      expect(spyFindPartnerByApiKey).toHaveBeenCalledTimes(1);
+      expect(spyFindPartnerByApiKey).toHaveBeenCalledWith(apikey);
+    });
+  });
+
+  describe('pipeValidation', () => {
+    it('should pass all validation for correct dto', async () => {
+      // arrange
+      const partnerDto: CreatePartnerDto = pick(mockPartner, [
+        'name',
+        'pic_email',
+        'pic_phone',
+      ]);
+
+      // act
+      const errors = await validate(partnerDto);
+
+      // assert
+      expect(errors.length).toBe(0);
+    });
+
+    it('should throw error when uuid invalid format', async () => {
       // arrange
       const notValidId = { id: '67746-a2bd693-47e1-99f5-f44572aee309' };
       const partnerDto = plainToInstance(IdPartnerDto, notValidId);
@@ -55,10 +199,10 @@ describe('AppController', () => {
       const errors = await validate(partnerDto);
 
       // assert
-      expect(errors.length).not.toBe(0);
+      expect(errors.length).toBe(1);
     });
 
-    it('should throw error when create partner not valid', async () => {
+    it('should throw error when create partner dto contains many errors', async () => {
       // arrange
       const notValidCreateDto = {
         name: 'Bkk',
@@ -72,79 +216,6 @@ describe('AppController', () => {
 
       // assert
       expect(errors.length).not.toBe(0);
-    });
-  });
-  describe('POST /api/v1 - getPartnerById', () => {
-    it('should response single response partner', async () => {
-      // arrange
-      const partnerDto: CreatePartnerDto = pick(mockPartner, [
-        'name',
-        'pic_email',
-        'pic_phone',
-      ]);
-      const createPartnerSpy = jest
-        .spyOn(mockAppService, 'createPartner')
-        .mockResolvedValue(mockPartner as Partner);
-      mockCreateResponse = new CreatePartnerResponseDto(
-        HttpStatus.CREATED,
-        `Create new partner successfully`,
-        mockPartner,
-      );
-
-      // // act
-      const response = await controller.createPartner(partnerDto);
-
-      // assert
-      expect(response).toEqual(mockCreateResponse);
-      expect(createPartnerSpy).toHaveBeenCalledTimes(1);
-      expect(createPartnerSpy).toHaveBeenCalledWith(partnerDto);
-    });
-  });
-
-  describe('GET /api/v1/:id - getPartnerById', () => {
-    it('should response single response partner', async () => {
-      // arrange
-      const partnerDto = plainToInstance(IdPartnerDto, { id: mockPartner.id });
-      const id = partnerDto.id;
-      const findPartnerByIdSpy = jest
-        .spyOn(mockAppService, 'findPartnerById')
-        .mockResolvedValue(mockPartner as Partner);
-      mockSingleResponse = new SinglePartnerResponseDto(
-        HttpStatus.OK,
-        `Get data partner with ID ${id} successfully`,
-        mockPartner,
-      );
-
-      // // act
-      const response = await controller.getPartnerById(partnerDto);
-
-      // assert
-      expect(response).toEqual(mockSingleResponse);
-      expect(findPartnerByIdSpy).toHaveBeenCalledTimes(1);
-      expect(findPartnerByIdSpy).toHaveBeenCalledWith(id);
-    });
-  });
-
-  describe('GET /api/v1/get-by-apikey/:api - getPartnerByAPI', () => {
-    it('should response single response partner', async () => {
-      // arrange
-      const apikey = mockPartner.api_key;
-      const findPartnerByApiKeySpy = jest
-        .spyOn(mockAppService, 'findPartnerByApiKey')
-        .mockResolvedValue(mockPartner as Partner);
-      mockSingleResponse = new SinglePartnerResponseDto(
-        HttpStatus.OK,
-        `Get data partner with API Key ${apikey} successfully`,
-        mockPartner,
-      );
-
-      // // act
-      const response = await controller.getPartnerByAPI(apikey);
-
-      // assert
-      expect(response).toEqual(mockSingleResponse);
-      expect(findPartnerByApiKeySpy).toHaveBeenCalledTimes(1);
-      expect(findPartnerByApiKeySpy).toHaveBeenCalledWith(apikey);
     });
   });
 });

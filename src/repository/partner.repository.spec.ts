@@ -40,16 +40,16 @@ describe('PartnerRepository', () => {
       // arrange
       const partnerDto = pick(mockPartner, ['name', 'pic_email', 'pic_phone']);
 
-      const saveOnSpy = jest
+      const spySave = jest
         .spyOn(partnerRepository, 'save')
-        .mockResolvedValue(mockPartner as Partner);
+        .mockResolvedValue(mockPartner);
 
       // act
       const newPartner = await partnerRepository.createNewPartner(partnerDto);
 
       // assert
       expect(newPartner).toEqual(mockPartner);
-      expect(saveOnSpy).toBeCalled();
+      expect(spySave).toBeCalled();
     });
   });
 
@@ -58,16 +58,16 @@ describe('PartnerRepository', () => {
       // arrange
       const id = mockPartner.id;
 
-      const findOneSpy = jest
+      const spyFindOne = jest
         .spyOn(partnerRepository, 'findOne')
-        .mockResolvedValue(mockPartner as Partner);
+        .mockResolvedValue(mockPartner);
 
       // act
-      const foundPartner = await partnerRepository.findOneById(id);
+      const foundPartner = await partnerRepository.findOneByIdPartner(id);
 
       // assert
       expect(foundPartner).toEqual(mockPartner);
-      expect(findOneSpy).toHaveBeenCalledWith({ where: { id } });
+      expect(spyFindOne).toHaveBeenCalledWith({ where: { id } });
     });
   });
 
@@ -75,16 +75,16 @@ describe('PartnerRepository', () => {
     it('should return found partner', async () => {
       // arrange
       const api_key = mockPartner.api_key;
-      const findOneSpy = jest
+      const spyFindOne = jest
         .spyOn(partnerRepository, 'findOne')
-        .mockResolvedValue(mockPartner as Partner);
+        .mockResolvedValue(mockPartner);
 
       // act
       const foundPartner = await partnerRepository.findOneByApiKey(api_key);
 
       // assert
       expect(foundPartner).toEqual(mockPartner);
-      expect(findOneSpy).toHaveBeenCalledWith({ where: { api_key } });
+      expect(spyFindOne).toHaveBeenCalledWith({ where: { api_key } });
     });
   });
 });

@@ -14,7 +14,7 @@ describe('AppService', () => {
 
   const mockPartnerRepo = {
     createNewPartner: jest.fn(() => Promise.resolve(mockPartner)),
-    findOneById: jest.fn(() => Promise.resolve(mockPartner)),
+    findOneByIdPartner: jest.fn(() => Promise.resolve(mockPartner)),
     findOneByApiKey: jest.fn(() => Promise.resolve(mockPartner)),
   };
 
@@ -49,17 +49,17 @@ describe('AppService', () => {
         'pic_email',
         'pic_phone',
       ]);
-      const createNewPartnerSpy = jest
+      const spyCreateNewPartner = jest
         .spyOn(mockPartnerRepo, 'createNewPartner')
-        .mockResolvedValue(mockPartner as Partner);
+        .mockResolvedValue(mockPartner);
 
       // act
       const partner = await appService.createPartner(partnerDto);
 
       // assert
       expect(partner).toEqual(mockPartner);
-      expect(createNewPartnerSpy).toHaveBeenCalledTimes(1);
-      expect(createNewPartnerSpy).toHaveBeenCalledWith(partnerDto);
+      expect(spyCreateNewPartner).toHaveBeenCalledTimes(1);
+      expect(spyCreateNewPartner).toHaveBeenCalledWith(partnerDto);
     });
   });
 
@@ -68,25 +68,25 @@ describe('AppService', () => {
       // arrange
       const partnerDto = plainToInstance(IdPartnerDto, { id: mockPartner.id });
       const id = partnerDto.id;
-      const findOneByIdSpy = jest
-        .spyOn(mockPartnerRepo, 'findOneById')
-        .mockResolvedValue(mockPartner as Partner);
+      const spyFindOneByIdPartner = jest
+        .spyOn(mockPartnerRepo, 'findOneByIdPartner')
+        .mockResolvedValue(mockPartner);
 
       // act
       const partner = await appService.findPartnerById(id);
 
       // assert
       expect(partner).toEqual(mockPartner);
-      expect(findOneByIdSpy).toHaveBeenCalledTimes(1);
-      expect(findOneByIdSpy).toHaveBeenCalledWith(id);
+      expect(spyFindOneByIdPartner).toHaveBeenCalledTimes(1);
+      expect(spyFindOneByIdPartner).toHaveBeenCalledWith(id);
     });
 
     it('should throw not found exception', async () => {
       // arrange
       const id = '67746a2b-d693-47e1-99f5-f44572aee309';
-      const findOneByIdSpy = jest
-        .spyOn(mockPartnerRepo, 'findOneById')
-        .mockResolvedValue(null);
+      const spyFindOneByIdPartner = jest
+        .spyOn(mockPartnerRepo, 'findOneByIdPartner')
+        .mockReturnValue(null);
 
       // act
       const findPartnerById = appService.findPartnerById(id);
@@ -95,8 +95,8 @@ describe('AppService', () => {
       await expect(findPartnerById).rejects.toEqual(
         new NotFoundException(`Partner with id ${id} doesn't exist`),
       );
-      expect(findOneByIdSpy).toHaveBeenCalledTimes(1);
-      expect(findOneByIdSpy).toHaveBeenCalledWith(id);
+      expect(spyFindOneByIdPartner).toHaveBeenCalledTimes(1);
+      expect(spyFindOneByIdPartner).toHaveBeenCalledWith(id);
     });
   });
 
@@ -104,23 +104,23 @@ describe('AppService', () => {
     it('should return a partner', async () => {
       // arrange
       const apikey = mockPartner.api_key;
-      const findOneByApiKeySpy = jest
+      const spyFindOneByApiKey = jest
         .spyOn(mockPartnerRepo, 'findOneByApiKey')
-        .mockResolvedValue(mockPartner as Partner);
+        .mockResolvedValue(mockPartner);
 
       // act
       const partner = await appService.findPartnerByApiKey(apikey);
 
       // assert
       expect(partner).toEqual(mockPartner);
-      expect(findOneByApiKeySpy).toHaveBeenCalledTimes(1);
-      expect(findOneByApiKeySpy).toHaveBeenCalledWith(apikey);
+      expect(spyFindOneByApiKey).toHaveBeenCalledTimes(1);
+      expect(spyFindOneByApiKey).toHaveBeenCalledWith(apikey);
     });
 
     it('should throw not found exception', async () => {
       // arrange
       const apikey = 'NotExistApiKey';
-      const findOneByApiKeySpy = jest
+      const spyFindOneByApiKey = jest
         .spyOn(mockPartnerRepo, 'findOneByApiKey')
         .mockResolvedValue(null);
 
@@ -131,8 +131,8 @@ describe('AppService', () => {
       await expect(findPartnerByApiKey).rejects.toEqual(
         new NotFoundException(`Partner with API Key ${apikey} doesn't exist`),
       );
-      expect(findOneByApiKeySpy).toHaveBeenCalledTimes(1);
-      expect(findOneByApiKeySpy).toHaveBeenCalledWith(apikey);
+      expect(spyFindOneByApiKey).toHaveBeenCalledTimes(1);
+      expect(spyFindOneByApiKey).toHaveBeenCalledWith(apikey);
     });
   });
 });

@@ -12,7 +12,7 @@ export class AppService {
   }
 
   async findPartnerById(id: string): Promise<Partner> {
-    const partner = await this.partnerRepository.findOneById(id);
+    const partner = await this.partnerRepository.findOneByIdPartner(id);
     if (!partner) {
       throw new NotFoundException(`Partner with id ${id} doesn't exist`);
     }
