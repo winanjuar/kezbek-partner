@@ -16,9 +16,12 @@ import {
   ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger';
+
 import { AppService } from './app.service';
-import { CreatePartnerDto } from './dto/create-partner.dto';
-import { IdPartnerDto } from './dto/id-partner.dto';
+
+import { CreatePartnerRequestDto } from './dto/request/create-partner.request.dto';
+import { IdPartnerRequestDto } from './dto/request/id-partner.request.dto';
+
 import { BadRequestResponseDto } from './dto/response/bad-request.response.dto';
 import { CreatePartnerResponseDto } from './dto/response/create-partner.response.dto';
 import { InternalServerErrorDto } from './dto/response/internal-server-error.response.dto';
@@ -30,12 +33,12 @@ import { SinglePartnerResponseDto } from './dto/response/single-partner.response
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @ApiBody({ type: CreatePartnerDto })
+  @ApiBody({ type: CreatePartnerRequestDto })
   @ApiCreatedResponse({ type: CreatePartnerResponseDto })
   @ApiBadRequestResponse({ type: BadRequestResponseDto })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorDto })
   @Post()
-  async createPartner(@Body() partnerDto: CreatePartnerDto) {
+  async createPartner(@Body() partnerDto: CreatePartnerRequestDto) {
     try {
       const newPartner = await this.appService.createPartner(partnerDto);
       return new CreatePartnerResponseDto(
@@ -53,7 +56,7 @@ export class AppController {
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
   @ApiInternalServerErrorResponse({ type: InternalServerErrorDto })
   @Get(':id')
-  async getPartnerById(@Param() partnerDto: IdPartnerDto) {
+  async getPartnerById(@Param() partnerDto: IdPartnerRequestDto) {
     try {
       const partner = await this.appService.findPartnerById(partnerDto.id);
       return new SinglePartnerResponseDto(

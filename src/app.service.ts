@@ -1,13 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreatePartnerDto } from './dto/create-partner.dto';
 import { Partner } from './entity/partner.entity';
 import { PartnerRepository } from './repository/partner.repository';
+import { CreatePartnerRequestDto } from './dto/request/create-partner.request.dto';
 
 @Injectable()
 export class AppService {
   constructor(private readonly partnerRepository: PartnerRepository) {}
 
-  async createPartner(partnerDto: CreatePartnerDto): Promise<Partner> {
+  async createPartner(partnerDto: CreatePartnerRequestDto): Promise<Partner> {
     return await this.partnerRepository.createNewPartner(partnerDto);
   }
 

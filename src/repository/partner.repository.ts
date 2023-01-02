@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Partner } from '../entity/partner.entity';
 import generateApiKey from 'generate-api-key';
+import { Partner } from '../entity/partner.entity';
 
 @Injectable()
 export class PartnerRepository extends Repository<Partner> {

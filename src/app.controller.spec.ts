@@ -3,13 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { pick } from 'lodash';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CreatePartnerDto } from './dto/create-partner.dto';
-import { IdPartnerDto } from './dto/id-partner.dto';
+import { Partner } from './entity/partner.entity';
+
+import { CreatePartnerRequestDto } from './dto/request/create-partner.request.dto';
+import { IdPartnerRequestDto } from './dto/request/id-partner.request.dto';
 import { CreatePartnerResponseDto } from './dto/response/create-partner.response.dto';
 import { SinglePartnerResponseDto } from './dto/response/single-partner.response.dto';
-import { Partner } from './entity/partner.entity';
 
 describe('AppController', () => {
   let controller: AppController;
@@ -46,7 +48,7 @@ describe('AppController', () => {
   afterEach(() => jest.clearAllMocks());
 
   describe('createPartner', () => {
-    const partnerDto: CreatePartnerDto = pick(mockPartner, [
+    const partnerDto: CreatePartnerRequestDto = pick(mockPartner, [
       'name',
       'pic_email',
       'pic_phone',
@@ -93,7 +95,7 @@ describe('AppController', () => {
   describe('getPartnerById', () => {
     it('should response single response partner', async () => {
       // arrange
-      const partnerDto: IdPartnerDto = pick(mockPartner, ['id']);
+      const partnerDto: IdPartnerRequestDto = pick(mockPartner, ['id']);
       const id = partnerDto.id;
       const spyFindPartnerById = jest
         .spyOn(mockAppService, 'findPartnerById')
@@ -115,7 +117,7 @@ describe('AppController', () => {
 
     it('should throw internal server error when unknown error occured', async () => {
       // arrange
-      const partnerDto: IdPartnerDto = pick(mockPartner, ['id']);
+      const partnerDto: IdPartnerRequestDto = pick(mockPartner, ['id']);
       const id = partnerDto.id;
       const spyFindPartnerById = jest
         .spyOn(mockAppService, 'findPartnerById')
@@ -177,7 +179,7 @@ describe('AppController', () => {
   describe('pipeValidation', () => {
     it('should pass all validation for correct dto', async () => {
       // arrange
-      const partnerDto: CreatePartnerDto = pick(mockPartner, [
+      const partnerDto: CreatePartnerRequestDto = pick(mockPartner, [
         'name',
         'pic_email',
         'pic_phone',
@@ -193,7 +195,7 @@ describe('AppController', () => {
     it('should throw error when uuid invalid format', async () => {
       // arrange
       const notValidId = { id: '67746-a2bd693-47e1-99f5-f44572aee309' };
-      const partnerDto = plainToInstance(IdPartnerDto, notValidId);
+      const partnerDto = plainToInstance(IdPartnerRequestDto, notValidId);
 
       // act
       const errors = await validate(partnerDto);
@@ -209,7 +211,10 @@ describe('AppController', () => {
         pic_email: 'admin.bukalapak.com',
         pic_phone: '0811',
       };
-      const partnerDto = plainToInstance(CreatePartnerDto, notValidCreateDto);
+      const partnerDto = plainToInstance(
+        CreatePartnerRequestDto,
+        notValidCreateDto,
+      );
 
       // act
       const errors = await validate(partnerDto);

@@ -2,9 +2,10 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { plainToInstance } from 'class-transformer';
 import { pick } from 'lodash';
+
 import { AppService } from './app.service';
-import { CreatePartnerDto } from './dto/create-partner.dto';
-import { IdPartnerDto } from './dto/id-partner.dto';
+import { CreatePartnerRequestDto } from './dto/request/create-partner.request.dto';
+import { IdPartnerRequestDto } from './dto/request/id-partner.request.dto';
 import { Partner } from './entity/partner.entity';
 import { PartnerRepository } from './repository/partner.repository';
 
@@ -44,7 +45,7 @@ describe('AppService', () => {
   describe('createNewPartner', () => {
     it('should return new partner just created', async () => {
       // arrange
-      const partnerDto: CreatePartnerDto = pick(mockPartner, [
+      const partnerDto: CreatePartnerRequestDto = pick(mockPartner, [
         'name',
         'pic_email',
         'pic_phone',
@@ -66,7 +67,9 @@ describe('AppService', () => {
   describe('findPartnerById', () => {
     it('should return a partner', async () => {
       // arrange
-      const partnerDto = plainToInstance(IdPartnerDto, { id: mockPartner.id });
+      const partnerDto = plainToInstance(IdPartnerRequestDto, {
+        id: mockPartner.id,
+      });
       const id = partnerDto.id;
       const spyFindOneByIdPartner = jest
         .spyOn(mockPartnerRepo, 'findOneByIdPartner')

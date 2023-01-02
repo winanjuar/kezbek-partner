@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Partner } from 'src/entity/partner.entity';
 import { DataSource } from 'typeorm';
-import { PartnerRepository } from './partner.repository';
 import { pick } from 'lodash';
+import { Partner } from 'src/entity/partner.entity';
+import { PartnerRepository } from './partner.repository';
 
 describe('PartnerRepository', () => {
   let partnerRepository: PartnerRepository;
