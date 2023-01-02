@@ -19,19 +19,18 @@ jobs:
         node-version: [18.x]
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - uses: oke-py/npm-audit-action@v2
-        with:
-          audit_level: moderate
-          github_token: ${{ secrets.TOKEN }}
-          issue_assignees: oke-py
-          issue_labels: vulnerability,test
-          dedupe_issues: true
-      - run: npm ci
-      - run: npm run build --if-present
-      - run: npm run test:cov      
+      - name: Install Dependency
+        run: npm install
+      - name: Audit Dependency
+        run: npm audit
+      - name: Build
+        run: npm run build --if-present
+      - name: Unit Test
+        run: npm run test:cov      
