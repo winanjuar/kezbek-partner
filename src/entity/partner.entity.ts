@@ -19,6 +19,9 @@ export class Partner {
   api_key: string;
 
   @Column()
+  api_secret: string;
+
+  @Column()
   pic_email: string;
 
   @Column()

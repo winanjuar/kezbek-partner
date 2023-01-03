@@ -24,6 +24,10 @@ export class PartnerDto {
   api_key: string;
 
   @ApiProperty()
+  @IsString()
+  api_secret: string;
+
+  @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
   pic_email: string;

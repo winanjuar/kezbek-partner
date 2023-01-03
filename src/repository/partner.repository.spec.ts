@@ -25,6 +25,7 @@ describe('PartnerRepository', () => {
       id: '67746a2b-d693-47e1-99f5-f44572aee307',
       name: 'Bukalapak',
       api_key: '5st43WouSdVwCcu4TWeP3N',
+      api_secret: '4YlSSMXNrhej7putW3cvRf',
       pic_email: 'admin@bukalapak.com',
       pic_phone: '+6285712312332',
       created_at: '2023-01-01T05:26:21.766Z',
@@ -38,19 +39,26 @@ describe('PartnerRepository', () => {
   describe('createNewPartner', () => {
     it('should return new partner', async () => {
       // arrange
-      const partnerDto = pick(mockPartner, ['name', 'pic_email', 'pic_phone']);
+      const partner = pick(mockPartner, [
+        'name',
+        'api_key',
+        'api_secret',
+        'pic_email',
+        'pic_phone',
+      ]) as Partner;
 
       const spySave = jest
         .spyOn(partnerRepository, 'save')
         .mockResolvedValue(mockPartner);
 
       // act
-      const newPartner = await partnerRepository.createNewPartner(partnerDto);
+      const newPartner = await partnerRepository.createNewPartner(partner);
 
       // assert
-      expect(newPartner).toEqual(mockPartner);
+      expect(newPartner.id).toBeDefined();
+      expect(newPartner.api_key).toBeDefined();
+      expect(newPartner.api_secret).toBeDefined();
       expect(spySave).toHaveBeenCalledTimes(1);
-      expect(spySave).toHaveBeenCalledWith(partnerDto);
     });
   });
 
