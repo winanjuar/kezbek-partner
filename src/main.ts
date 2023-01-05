@@ -1,6 +1,7 @@
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { Transport } from '@nestjs/microservices';
 import {
   DocumentBuilder,
   SwaggerCustomOptions,
@@ -11,6 +12,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
+  const serviceName = configService.get<string>('APP_NAME');
+  const logger = new Logger(serviceName);
+  const title = configService.get<string>('PROJECT_NAME') + ' - ' + serviceName;
+  logger.log(title);
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -29,7 +34,7 @@ async function bootstrap() {
   });
 
   const configSwagger = new DocumentBuilder()
-    .setTitle('KezBek Solution - Microservice Partner')
+    .setTitle('KezBek Solution - Microservice Parner')
     .setDescription(
       'API Documentation for Microservice Partner of KezBek Solution',
     )
@@ -45,7 +50,20 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, configSwagger);
   SwaggerModule.setup('apidoc', app, document, configCustomSwagger);
 
-  const PORT = configService.get<number>('APP_PORT');
-  await app.listen(PORT);
+  const port = configService.get<number>('APP_PORT');
+  await app.listen(port);
+  logger.log(`Service is running on port ${port}`);
+
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      urls: [configService.get<string>('RABBITMQ_URL')],
+      queue: configService.get<string>('RABBITMQ_QUEUE_PARTNER'),
+      queueOptions: { durable: false },
+      prefetchCount: 1,
+    },
+  });
+  await app.startAllMicroservices();
+  logger.log(`${serviceName} is listening queue from RabbitMQ`);
 }
 bootstrap();

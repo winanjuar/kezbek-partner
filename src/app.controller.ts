@@ -4,9 +4,11 @@ import {
   Get,
   HttpStatus,
   InternalServerErrorException,
+  Logger,
   Param,
   Post,
 } from '@nestjs/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -31,6 +33,8 @@ import { SinglePartnerResponseDto } from './dto/response/single-partner.response
 @ApiTags('Partner')
 @Controller({ version: '1' })
 export class AppController {
+  private readonly logger = new Logger(AppController.name);
+
   constructor(private readonly appService: AppService) {}
 
   @ApiBody({ type: CreatePartnerRequestDto })
@@ -47,7 +51,7 @@ export class AppController {
         newPartner,
       );
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException();
     }
   }
 
@@ -65,7 +69,7 @@ export class AppController {
         partner,
       );
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException();
     }
   }
 
@@ -82,7 +86,23 @@ export class AppController {
         partner,
       );
     } catch (error) {
-      throw new InternalServerErrorException(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @MessagePattern('mp_info_partner')
+  async handleGetLoyaltyPoint(@Payload() data: any) {
+    try {
+      const partner_id = data.partner_id;
+      const transaction_id = data.transaction_id;
+      const partner = await this.appService.findPartnerById(partner_id);
+      this.logger.log(
+        `[MessagePattern mp_info_partner] [${transaction_id}] Get data partner successfully`,
+      );
+      return partner;
+    } catch (error) {
+      this.logger.log(`[MessagePattern mp_info_partner] ${error}`);
+      throw new InternalServerErrorException();
     }
   }
 }
