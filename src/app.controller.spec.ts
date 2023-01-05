@@ -85,14 +85,14 @@ describe('AppController', () => {
 
       const spyCreatePartner = jest
         .spyOn(mockAppService, 'createPartner')
-        .mockRejectedValue(new InternalServerErrorException('error'));
+        .mockRejectedValue(new InternalServerErrorException());
 
       // act
       const createPartner = controller.createPartner(partnerDto);
 
       // assert
       await expect(createPartner).rejects.toEqual(
-        new InternalServerErrorException('error'),
+        new InternalServerErrorException(),
       );
       expect(spyCreatePartner).toHaveBeenCalledTimes(1);
       expect(spyCreatePartner).toHaveBeenCalledWith(partnerDto);
@@ -128,14 +128,14 @@ describe('AppController', () => {
       const id = partnerDto.id;
       const spyFindPartnerById = jest
         .spyOn(mockAppService, 'findPartnerById')
-        .mockRejectedValue(new InternalServerErrorException('error'));
+        .mockRejectedValue(new InternalServerErrorException());
 
       // act
       const getPartnerById = controller.getPartnerById(partnerDto);
 
       // assert
       await expect(getPartnerById).rejects.toEqual(
-        new InternalServerErrorException('error'),
+        new InternalServerErrorException(),
       );
       expect(spyFindPartnerById).toHaveBeenCalledTimes(1);
       expect(spyFindPartnerById).toHaveBeenCalledWith(id);
@@ -169,14 +169,14 @@ describe('AppController', () => {
       const apikey = mockPartner.api_key;
       const spyFindPartnerByApiKey = jest
         .spyOn(mockAppService, 'findPartnerByApiKey')
-        .mockRejectedValue(new InternalServerErrorException('error'));
+        .mockRejectedValue(new InternalServerErrorException());
 
       // act
       const getPartnerByAPI = controller.getPartnerByAPI(apikey);
 
       // assert
       await expect(getPartnerByAPI).rejects.toEqual(
-        new InternalServerErrorException('error'),
+        new InternalServerErrorException(),
       );
       expect(spyFindPartnerByApiKey).toHaveBeenCalledTimes(1);
       expect(spyFindPartnerByApiKey).toHaveBeenCalledWith(apikey);
