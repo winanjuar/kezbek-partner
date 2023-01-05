@@ -20,6 +20,8 @@ import {
 } from '@nestjs/swagger';
 
 import { AppService } from './app.service';
+import { IRequestInfoPartner } from './core/request-info-partner.interface';
+import { IResponseInfoPartner } from './core/response-info-partner.interface';
 
 import { CreatePartnerRequestDto } from './dto/request/create-partner.request.dto';
 import { IdPartnerRequestDto } from './dto/request/id-partner.request.dto';
@@ -91,7 +93,7 @@ export class AppController {
   }
 
   @MessagePattern('mp_info_partner')
-  async handleGetLoyaltyPoint(@Payload() data: any) {
+  async handleInfoPartner(@Payload() data: any) {
     try {
       const partner_id = data.partner_id;
       const transaction_id = data.transaction_id;
@@ -102,6 +104,27 @@ export class AppController {
       return partner;
     } catch (error) {
       this.logger.log(`[MessagePattern mp_info_partner] ${error}`);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @MessagePattern('mp_info_partner_key')
+  async handleInfoPartnerKey(
+    @Payload() data: IRequestInfoPartner,
+  ): Promise<IResponseInfoPartner> {
+    try {
+      const api_key = data.api_key;
+      const transaction_id = data.transaction_id;
+      const partner = await this.appService.findPartnerByApiKey(api_key);
+      this.logger.log(
+        `[MessagePattern mp_info_partner_key] [${transaction_id}] Get data partner successfully`,
+      );
+      return {
+        id: partner.id,
+        name: partner.name,
+      } as IResponseInfoPartner;
+    } catch (error) {
+      this.logger.log(`[MessagePattern mp_info_partner_key] ${error}`);
       throw new InternalServerErrorException();
     }
   }
