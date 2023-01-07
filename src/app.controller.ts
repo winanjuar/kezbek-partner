@@ -28,7 +28,7 @@ import { IdPartnerRequestDto } from './dto/request/id-partner.request.dto';
 
 import { BadRequestResponseDto } from './dto/response/bad-request.response.dto';
 import { CreatePartnerResponseDto } from './dto/response/create-partner.response.dto';
-import { InternalServerErrorDto } from './dto/response/internal-server-error.response.dto';
+import { InternalServerErrorResponseDto } from './dto/response/internal-server-error.response.dto';
 import { NotFoundResponseDto } from './dto/response/not-found.response.dto';
 import { SinglePartnerResponseDto } from './dto/response/single-partner.response.dto';
 
@@ -42,7 +42,7 @@ export class AppController {
   @ApiBody({ type: CreatePartnerRequestDto })
   @ApiCreatedResponse({ type: CreatePartnerResponseDto })
   @ApiBadRequestResponse({ type: BadRequestResponseDto })
-  @ApiInternalServerErrorResponse({ type: InternalServerErrorDto })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponseDto })
   @Post()
   async createPartner(@Body() partnerDto: CreatePartnerRequestDto) {
     try {
@@ -60,7 +60,7 @@ export class AppController {
   @ApiOkResponse({ type: SinglePartnerResponseDto })
   @ApiBadRequestResponse({ type: BadRequestResponseDto })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  @ApiInternalServerErrorResponse({ type: InternalServerErrorDto })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponseDto })
   @Get(':id')
   async getPartnerById(@Param() partnerDto: IdPartnerRequestDto) {
     try {
@@ -77,7 +77,7 @@ export class AppController {
 
   @ApiOkResponse({ type: SinglePartnerResponseDto })
   @ApiNotFoundResponse({ type: NotFoundResponseDto })
-  @ApiInternalServerErrorResponse({ type: InternalServerErrorDto })
+  @ApiInternalServerErrorResponse({ type: InternalServerErrorResponseDto })
   @Get('/get-by-apikey/:apikey')
   async getPartnerByAPI(@Param('apikey') apikey: string) {
     try {
