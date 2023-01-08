@@ -15,7 +15,7 @@ export class Partner {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ unique: true })
   api_key: string;
 
   @Column()
