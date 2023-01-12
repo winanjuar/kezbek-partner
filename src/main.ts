@@ -34,12 +34,13 @@ async function bootstrap() {
   });
 
   const configSwagger = new DocumentBuilder()
-    .setTitle('KezBek Solution - Microservice Parner')
+    .setTitle('KezBek Solution - Microservice Partner')
     .setDescription(
       'API Documentation for Microservice Partner of KezBek Solution',
     )
     .setContact('Sugeng Winanjuar', null, 'winanjuar@gmail.com')
     .setVersion('1.0')
+    .addBearerAuth()
     .build();
 
   const configCustomSwagger: SwaggerCustomOptions = {
