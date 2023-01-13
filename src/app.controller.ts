@@ -120,7 +120,8 @@ export class AppController {
         `[MessagePattern mp_info_partner_key] [${transaction_id}] Get data partner successfully`,
       );
       return {
-        id: partner.id,
+        transaction_id,
+        partner_id: partner.id,
         name: partner.name,
       } as IResponseInfoPartner;
     } catch (error) {
