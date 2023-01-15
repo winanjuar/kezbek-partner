@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { plainToInstance } from 'class-transformer';
@@ -29,12 +30,12 @@ describe('AppService', () => {
 
     appService = module.get<AppService>(AppService);
     mockPartner = {
-      id: '67746a2b-d693-47e1-99f5-f44572aee307',
-      name: 'Bukalapak',
-      api_key: '5st43WouSdVwCcu4TWeP3N',
-      api_secret: '4YlSSMXNrhej7putW3cvRf',
-      pic_email: 'admin@bukalapak.com',
-      pic_phone: '+6285712312332',
+      id: faker.datatype.uuid(),
+      name: faker.name.firstName(),
+      api_key: faker.datatype.string(),
+      api_secret: faker.datatype.string(),
+      pic_email: faker.internet.email(),
+      pic_phone: faker.phone.number(),
       created_at: '2023-01-01T05:26:21.766Z',
       updated_at: '2023-01-01T05:26:21.766Z',
       deleted_at: null,

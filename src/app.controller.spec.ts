@@ -12,6 +12,10 @@ import { CreatePartnerRequestDto } from './dto/request/create-partner.request.dt
 import { IdPartnerRequestDto } from './dto/request/id-partner.request.dto';
 import { CreatePartnerResponseDto } from './dto/response/create-partner.response.dto';
 import { SinglePartnerResponseDto } from './dto/response/single-partner.response.dto';
+import { faker } from '@faker-js/faker';
+import { IRequestInfoPartner } from './core/request-info-partner.interface';
+import { IRequestInfoPartnerKey } from './core/request-info-partner-key.interface';
+import { IResponseInfoPartner } from './core/response-info-partner.interface';
 
 describe('AppController', () => {
   let controller: AppController;
@@ -34,12 +38,12 @@ describe('AppController', () => {
     controller = module.get<AppController>(AppController);
 
     mockPartner = {
-      id: '67746a2b-d693-47e1-99f5-f44572aee307',
-      name: 'Bukalapak',
-      api_key: '5st43WouSdVwCcu4TWeP3N',
-      api_secret: '4YlSSMXNrhej7putW3cvRf',
-      pic_email: 'admin@bukalapak.com',
-      pic_phone: '+6285712312332',
+      id: faker.datatype.uuid(),
+      name: faker.name.firstName(),
+      api_key: faker.datatype.string(),
+      api_secret: faker.datatype.string(),
+      pic_email: faker.internet.email(),
+      pic_phone: faker.phone.number(),
       created_at: '2023-01-01T05:26:21.766Z',
       updated_at: '2023-01-01T05:26:21.766Z',
       deleted_at: null,
@@ -109,7 +113,7 @@ describe('AppController', () => {
         .mockResolvedValue(mockPartner);
       mockSingleResponse = new SinglePartnerResponseDto(
         HttpStatus.OK,
-        `Get data partner with ID ${id} successfully`,
+        `Get data partner successfully`,
         mockPartner,
       );
 
@@ -180,6 +184,104 @@ describe('AppController', () => {
       );
       expect(spyFindPartnerByApiKey).toHaveBeenCalledTimes(1);
       expect(spyFindPartnerByApiKey).toHaveBeenCalledWith(apikey);
+    });
+  });
+
+  describe('handleInfoPartnerKey', () => {
+    it('should response single response partner', async () => {
+      // arrange
+      const data: IRequestInfoPartnerKey = {
+        transaction_id: faker.datatype.uuid(),
+        api_key: mockPartner.api_key,
+      };
+      const spyFindPartnerByApiKey = jest
+        .spyOn(mockAppService, 'findPartnerByApiKey')
+        .mockResolvedValue(mockPartner);
+
+      const mockResponse: IResponseInfoPartner = {
+        transaction_id: data.transaction_id,
+        partner_id: mockPartner.id,
+        name: mockPartner.name,
+      };
+
+      // act
+      const response = await controller.handleInfoPartnerKey(data);
+
+      // assert
+      expect(response).toEqual(mockResponse);
+      expect(spyFindPartnerByApiKey).toHaveBeenCalledTimes(1);
+      expect(spyFindPartnerByApiKey).toHaveBeenCalledWith(data.api_key);
+    });
+
+    it('should throw internal server error when unknown error occured', async () => {
+      // arrange
+      const data: IRequestInfoPartnerKey = {
+        transaction_id: faker.datatype.uuid(),
+        api_key: mockPartner.api_key,
+      };
+
+      const spyFindPartnerByApiKey = jest
+        .spyOn(mockAppService, 'findPartnerByApiKey')
+        .mockRejectedValue(new InternalServerErrorException());
+
+      // act
+      const funHandleInfoPartnerKey = controller.handleInfoPartnerKey(data);
+
+      // assert
+      await expect(funHandleInfoPartnerKey).rejects.toEqual(
+        new InternalServerErrorException(),
+      );
+      expect(spyFindPartnerByApiKey).toHaveBeenCalledTimes(1);
+      expect(spyFindPartnerByApiKey).toHaveBeenCalledWith(data.api_key);
+    });
+  });
+
+  describe('handleInfoPartner', () => {
+    it('should response single response partner', async () => {
+      // arrange
+      const data: IRequestInfoPartner = {
+        transaction_id: faker.datatype.uuid(),
+        partner_id: mockPartner.id,
+      };
+      const spyFindPartnerById = jest
+        .spyOn(mockAppService, 'findPartnerById')
+        .mockResolvedValue(mockPartner);
+
+      const mockResponse: IResponseInfoPartner = {
+        transaction_id: data.transaction_id,
+        partner_id: mockPartner.id,
+        name: mockPartner.name,
+      };
+
+      // act
+      const response = await controller.handleInfoPartner(data);
+
+      // assert
+      expect(response).toEqual(mockResponse);
+      expect(spyFindPartnerById).toHaveBeenCalledTimes(1);
+      expect(spyFindPartnerById).toHaveBeenCalledWith(data.partner_id);
+    });
+
+    it('should throw internal server error when unknown error occured', async () => {
+      // arrange
+      const data: IRequestInfoPartner = {
+        transaction_id: faker.datatype.uuid(),
+        partner_id: mockPartner.id,
+      };
+
+      const spyFindPartnerById = jest
+        .spyOn(mockAppService, 'findPartnerById')
+        .mockRejectedValue(new InternalServerErrorException());
+
+      // act
+      const funHandleInfoPartner = controller.handleInfoPartner(data);
+
+      // assert
+      await expect(funHandleInfoPartner).rejects.toEqual(
+        new InternalServerErrorException(),
+      );
+      expect(spyFindPartnerById).toHaveBeenCalledTimes(1);
+      expect(spyFindPartnerById).toHaveBeenCalledWith(data.partner_id);
     });
   });
 
